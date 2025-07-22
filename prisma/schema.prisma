@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  email            String          @unique
+  password         String
+  role             UserRole        @default(USER)
+  preferences      Preferences?
+  venueBookings    VenueBooking[]
+  ticketBookings   TicketBooking[]
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  events           Event[]
+  payments         Payment[]
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+type TimeSlot {
+  startDate DateTime
+  endDate   DateTime
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Preferences {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  categories  String[]
+  budgetRange Int?
+  userId      String   @unique @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Venue {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  location      String
+  latitude      Float
+  longitude     Float
+  capacity      Int
+  description   String?
+  pricePerDay   Int
+  image         String
+  venueBookings VenueBooking[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  events        Event[]
+
+  @@index([pricePerDay])
+  @@index([capacity])
+  @@index([latitude, longitude])
+}
+
+enum EventType {
+  PUBLIC
+  PRIVATE
+}
+
+type TicketPrice {
+  seatType       String
+  price          Int
+  availableSeats Int
+}
+
+model Event {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String?
+  category       String
+  date           DateTime
+  isPublic       Boolean
+  image          String?
+  organizerId    String          @db.ObjectId
+  organizer      User            @relation(fields: [organizerId], references: [id])
+  venueId        String?         @db.ObjectId
+  venue          Venue?          @relation(fields: [venueId], references: [id])
+  ticketPrices   TicketPrice[]
+  ticketBookings TicketBooking[]
+  venueBookings  VenueBooking[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([organizerId])
+  @@index([venueId])
+}
+
+type Services {
+  catering    Float
+  decoration  Float
+  photography Float
+  music       Float
+}
+
+model VenueBooking {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String        @db.ObjectId
+  user      User          @relation(fields: [userId], references: [id])
+  venueId   String        @db.ObjectId
+  venue     Venue         @relation(fields: [venueId], references: [id])
+  eventId   String?       @db.ObjectId
+  event     Event?        @relation(fields: [eventId], references: [id])
+  startDate DateTime
+  endDate   DateTime
+  status    BookingStatus @default(PENDING)
+  services  Services
+  guests    Int
+  totalCost Float
+  paymentId String?       @db.ObjectId
+  payment   Payment?      @relation("VenueBookingPayment", fields: [paymentId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([venueId])
+  @@index([eventId])
+}
+
+model TicketBooking {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String        @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id])
+  eventId     String        @db.ObjectId
+  event       Event         @relation(fields: [eventId], references: [id])
+  ticketCount Int
+  seatType    String
+  status      BookingStatus @default(PENDING)
+  paymentId   String        @db.ObjectId
+  payment     Payment       @relation("TicketBookingPayment", fields: [paymentId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Payment {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String          @db.ObjectId
+  user           User            @relation(fields: [userId], references: [id])
+  amount         Float
+  status         PaymentStatus   @default(PENDING)
+  paymentMethod  String
+  bookingId      String?         @db.ObjectId
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  venueBookings  VenueBooking[]  @relation("VenueBookingPayment")
+  ticketBookings TicketBooking[] @relation("TicketBookingPayment")
+
+  @@index([userId])
+}
