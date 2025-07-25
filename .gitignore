@@ -2,3 +2,4 @@
 /logs/*.log
 /src/public
 .env
+.env.sample
