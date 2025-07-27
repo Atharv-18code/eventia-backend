@@ -97,7 +97,7 @@ model Event {
   organizer      User            @relation(fields: [organizerId], references: [id])
   venueId        String?         @db.ObjectId
   venue          Venue?          @relation(fields: [venueId], references: [id])
-  ticketPrices   TicketPrice[]
+  ticketPrices   Json
   ticketBookings TicketBooking[]
   venueBookings  VenueBooking[]
   createdAt      DateTime        @default(now())

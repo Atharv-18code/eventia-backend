@@ -6,6 +6,7 @@ import { upload } from "../config/multer.config";
 const eventRouter = Router();
 
 eventRouter.post("/", authenticate, authorize(['USER']), upload.single("image"), EventController.createEvent);
+eventRouter.post("/", authenticate, authorize(['USER']), upload.single("image"), EventController.createEvent);
 eventRouter.get("/", authenticate, EventController.getAllEvents);
 eventRouter.get("/public", EventController.getAllPublicEvents);
 eventRouter.get("/public/upcoming", authenticate, authorize(['USER']), EventController.getUpcomingPublicEvents);
