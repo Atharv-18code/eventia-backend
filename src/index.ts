@@ -26,7 +26,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use(rateLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
-app.use("/api/events", eventRoutes);
 app.use("/api/venues", venueRoutes);
 
 app.get("/health", (_, res) => {
