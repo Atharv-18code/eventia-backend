@@ -47,6 +47,10 @@ export const VenueService = {
      * @param pricePerHour - Price per hour for the venue
      * @param description - Venue description (optional)
      * @param imageUrl - Image URL for the venue (optional)
+     * @param amenities - List of amenities (optional)
+     * @param rules - List of rules (optional)
+     * @param termsAndConditions - Terms and conditions (optional)
+     * @param contactInfo - Contact information (optional)
      * @returns Object with the created venue or error
      */
     createVenue: async (
@@ -56,6 +60,10 @@ export const VenueService = {
         pricePerDay: number,
         description?: string,
         imageUrl?: string,
+        amenities?: string[],
+        rules?: string[],
+        termsAndConditions?: string,
+        contactInfo?: { phone?: string; email?: string; contactPerson?: string },
     ): Promise<Venue | { error: string }> => {
         try {
             let uploadedImageUrl = "";
@@ -84,6 +92,12 @@ export const VenueService = {
                     pricePerDay,
                     latitude,
                     longitude,
+                    amenities: amenities || [],
+                    rules: rules || [],
+                    termsAndConditions: termsAndConditions || null,
+                    contactInfo: contactInfo || null,
+                    availability: [],
+                    gallery: [],
                 },
             });
 

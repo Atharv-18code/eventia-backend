@@ -64,6 +64,12 @@ model Venue {
   description   String?
   pricePerDay   Int
   image         String
+  amenities     String[]       @default([])
+  rules         String[]       @default([])
+  termsAndConditions String?
+  contactInfo   ContactInfo?
+  availability  String[]       @default([]) // Array of available date ranges
+  gallery       String[]       @default([]) // Additional images
   venueBookings VenueBooking[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -72,6 +78,12 @@ model Venue {
   @@index([pricePerDay])
   @@index([capacity])
   @@index([latitude, longitude])
+}
+
+type ContactInfo {
+  phone         String?
+  email         String?
+  contactPerson String?
 }
 
 enum EventType {

@@ -15,7 +15,17 @@ const VenueController = {
      */
     createVenue: async (req: Request, res: Response): Promise<any> => {
         try {
-            const { name, location, capacity, pricePerDay, description } = req.body;
+            const { 
+                name, 
+                location, 
+                capacity, 
+                pricePerDay, 
+                description,
+                amenities,
+                rules,
+                termsAndConditions,
+                contactInfo 
+            } = req.body;
             const image = req.file;
 
             let imageUrl = undefined;
