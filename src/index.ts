@@ -6,6 +6,7 @@ import rateLimiter from "./middlewares/rateLimiter.middleware";
 import authRoutes from "./routes/auth.routes";
 import eventRoutes from "./routes/events.routes";
 import venueRoutes from "./routes/venues.routes";
+import ticketRoutes from "./routes/ticketBookingRoutes";
 import path from "path";
 
 const app = express();
@@ -27,6 +28,7 @@ app.use(rateLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/venues", venueRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 app.get("/health", (_, res) => {
     logger.info("Health check endpoint was called.");
